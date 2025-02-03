@@ -14,12 +14,28 @@ app.use(bodyParser.json());
 app.use(express.json());
 app.use(cookieParser());
 
+
+
+
+
+
+
+
+
+
 // Connect to MongoDB
 mongoose
   .connect(process.env.MONGO_URI, { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => console.log("MongoDB Connected"))
   .catch((err) => console.log("MongoDB Connection Error:", err));
 
+
+
+
+
+
+
+  
 // Define User Schema & Model
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true, minlength: 3, maxlength: 100 },
@@ -70,19 +86,19 @@ app.post("/api/auth/login", async (req, res) => {
 
     // Set the token as an HTTP-only cookie
     res.cookie("token", token, {
-      httpOnly: true, // Ensures the cookie cannot be accessed via JavaScript
+      httpOnly: true, // Ensures the cookie cannot be accessed via JavaScript 
       secure: process.env.NODE_ENV === "production", // Set to true in production for HTTPS
-      maxAge: 3600000, // 1 hour
+      maxAge: 3600000, // 1 hour for cookie storeage 
     });
 
-    res.json({ message: "Login successful",authToken:token });
+    res.json({ message: "Login successful",authToken:token,email,name:user.name,identity:user.identity});
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 
 
-// Password Reset Route
+// Password Reset Route takes email and the security question to reset
 app.post("/api/auth/password-reset", async (req, res) => {
   const { email, schoolName, newPassword } = req.body;
 
@@ -123,6 +139,96 @@ app.get("/auth/validateToken", (req, res) => {
         res.json({ message: "Access granted", code:'00' });
     });
 });
+
+
+
+
+
+
+
+
+
+
+//admin login and register
+
+
+
+// Define Admin Schema
+const superAdminSchema = new mongoose.Schema({
+  name: { type: String, required: true, minlength: 3, maxlength: 100 },
+  identity :{type:Number, required:true},
+  email: { type: String, unique: true, required: true },
+  password: { type: String, required: true, minlength: 8 },
+  schoolName: { type: String, required: true }, // Security question answer
+});
+
+const SuperAdmin = mongoose.model("SuperAdmin", superAdminSchema);
+
+
+// Fix the incorrect schema reference here
+
+//register for admin
+
+app.post("/api/auth/superadminregister", async (req, res) => {
+  const { name,identity, email, password, schoolName } = req.body;
+
+  try {
+    if (!name || !email || !password || !schoolName) {
+      return res.status(400).json({ message: "All fields are required" });
+    }
+
+    let superAdmin = await SuperAdmin.findOne({ email });
+    if (superAdmin) return res.status(400).json({ message: "Admin already exists" });
+
+    const hashedPassword = await bcrypt.hash(password, 10);
+    superAdmin = new SuperAdmin({ name, identity, email, password: hashedPassword, schoolName });
+    await superAdmin.save();
+
+    res.status(201).json({ message: "SuperAdmin registered successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+
+//login for admin 
+
+app.post("/api/auth/superadminlogin", async (req, res) => {
+  const { email, password } = req.body;
+
+  try {
+    const superAdmin = await SuperAdmin.findOne({ email });  // ✅ Use SuperAdmin model
+    console.log(superAdmin);
+    if (!superAdmin) return res.status(400).json({ message: "Invalid credentials" });
+
+    const isMatch = await bcrypt.compare(password, superAdmin.password);
+    if (!isMatch)
+      return res.status(400).json({ message: "Invalid credentials" });
+
+    const token = jwt.sign({ userId: superAdmin._id, role: "superadmin" }, process.env.JWT_SECRET, {
+      expiresIn: "1h",
+    });
+
+    res.cookie("token", token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === "production",
+      maxAge: 3600000,
+    });
+
+    res.json({ message: "SuperAdmin login successful", authToken: token,email,name:superAdmin.name,identity:superAdmin.identity });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+
+
+
+
+
+
+
+
 
 
 

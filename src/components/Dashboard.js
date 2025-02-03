@@ -1,23 +1,23 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from 'react-redux'; // Import useSelector from react-redux
-import { useDispatch } from 'react-redux'; // Import useDispatch to dispatch actions
+import { useSelector } from 'react-redux'; 
+import { useDispatch } from 'react-redux'; 
 import { logout } from "../redux";
 
 const Dashboard = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch(); // Initialize useDispatch hook
 
-  // Access authentication status from Redux state
-  const isAuthenticated = useSelector((state) => state.isAuthenticated); // Assuming your state has this field
+  // Access authentication status from Redux state like email user token 
+  const { isAuthenticated,user,token } = useSelector((state) => state.auth);
 
   // Handle logout
   const handleLogout = () => {
-    // Remove the token from localStorage
+    // Remove the token from localStorage cookies
     dispatch(logout());
     localStorage.removeItem('token');
 
-    // Redirect to the login page
+    // Redirect to the login page 
     navigate('/');
   };
 

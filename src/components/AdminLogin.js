@@ -2,10 +2,11 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux'; // Import useDispatch to dispatch actions
-//import { login } from '../redux'; // Import login action
+//import { loginAdminSuccess } from '../adminredux'; // Import admin login action
 import { loginSuccess } from "../redux";
 
-const Login = () => {
+
+const AdminLogin = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState('');
@@ -15,29 +16,35 @@ const Login = () => {
   const handleLogin = async (e) => {
     e.preventDefault();
     try {
-      const response = await axios.post('http://localhost:5000/api/auth/login', {
+      // Make API request to authenticate the admin
+      const response = await axios.post('http://localhost:5000/api/auth/superadminlogin', {
         email,
         password,
       });
 
       setMessage('Login successful');
-      const userData = { email, token: response.data.authToken,name:response.data.name,identity:response.data.identity }; // Use email and token from the response
+      
+      // Prepare admin data from response and store in Redux
+      const adminData = { email, token: response.data.authToken,name:response.data.name,identity:response.data.identity };
       console.log(response);
-      // Dispatch login action to update Redux store
-      document.cookie = `authToken=${userData.token}; path=/; max-age=604800; Secure`;
 
-      dispatch(loginSuccess(userData));
+      // Dispatch login action to update Redux store with admin data
+      dispatch(loginSuccess(adminData));
 
-      // Navigate to the dashboard after successful login
-      navigate('/dashboard');
+      // Optionally, you can also store the token in cookies or localStorage
+      document.cookie = `authToken=${adminData.token}; path=/; max-age=604800; Secure`;
+
+      // Navigate to the admin dashboard after successful login
+      navigate('/AdminDashboard');
     } catch (error) {
+      // Display error message if login fails
       setMessage(error.response?.data?.message || 'An error occurred');
     }
   };
 
   return (
     <div className="max-w-sm mx-auto p-4 border rounded shadow-lg">
-      <h2 className="text-2xl font-bold text-center mb-4">Login</h2>
+      <h2 className="text-2xl font-bold text-center mb-4">Admin Login</h2>
 
       {message && <p className="text-center text-red-500 mb-4">{message}</p>}
 
@@ -74,4 +81,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLogin;

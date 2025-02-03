@@ -10,6 +10,9 @@ import Dashboard from './components/Dashboard';
 import ProtectedRoute from "./ProtectedRoute";
 import PublicRoute from './PublicRoute';
 import Contact from './components/Contact';
+import AdminLogin from './components/AdminLogin';
+import AdminDashboard from './components/AdminDashboard';
+import AdminProtectedRoute from './AdminProtectedRoute';
 //import Contact from './components/Contact';
 
 
@@ -20,10 +23,18 @@ function App() {
         <div className="App">
           <Routes>
             <Route path="/" element={<MainSection />} />
+            <Route path="/AdminLogin" element={<AdminLogin />} />
+            <Route path="/Admindashboard" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
+
+
+
+
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
+
             <Route path="/register" element={<Register />} />x``
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
+
 
             
             

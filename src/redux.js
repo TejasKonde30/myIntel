@@ -13,6 +13,8 @@ const initialState = {
   user: null, // Store user details
   token: null, // Store token
   isAuthenticated: false, // Track login status
+  identity:0,
+  name:null
 };
 
 const authSlice = createSlice({
@@ -23,6 +25,8 @@ const authSlice = createSlice({
       state.user = action.payload.email;
       state.token = action.payload.token;
       state.isAuthenticated = true;
+      state.name=action.payload.name;
+      state.identity=action.payload.identity;
     },
     logout: (state) => {
       state.user = null;
@@ -31,6 +35,10 @@ const authSlice = createSlice({
     },
   },
 });
+
+
+
+
 
 export const { loginSuccess, logout } = authSlice.actions;
 
@@ -50,6 +58,9 @@ const store = configureStore({
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware({ serializableCheck: false }),
 });
+
+
+
 
 export const persistor = persistStore(store);
 export default store;
