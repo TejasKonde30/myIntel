@@ -18,7 +18,7 @@ const Dashboard = () => {
     localStorage.removeItem('token');
 
     // Redirect to the login page 
-    navigate('/');
+    navigate("/login");
   };
 
   return (

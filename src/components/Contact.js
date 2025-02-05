@@ -2,7 +2,7 @@ import React from "react";
 import { useSelector } from "react-redux";
 
 const Contact = () => {
-  const { isAuthenticated,user,token,email } = useSelector((state) => state.auth);
+  const { isAuthenticated,user,token,email,password,schoolName } = useSelector((state) => state.auth);
 
   return (
     <div>
@@ -11,6 +11,10 @@ const Contact = () => {
       <h1>hello</h1>
       <h1>{user}</h1>
       <h1>{email}</h1>
+      <h1>{password}</h1>
+      <h1>{schoolName}</h1>
+
+
     </div>
   );
 };

@@ -224,9 +224,69 @@ app.post("/api/auth/superadminlogin", async (req, res) => {
 
 
 
+//getting users data for the admin logic
 
 
 
+app.get("/api/user/profile", async (req, res) => {
+  const { email, name } = req.query; // Use req.query for GET requests
+
+  try {
+    const query = {};
+    if (email) query.email = email;
+    if (name) query.name = name;
+
+    const users = await User.find(query); // Find users by email OR name
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    res.json(users);
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
+
+
+
+
+// Update user details from the admin panel
+app.put("/api/user/manage", async (req, res) => {
+  const { email, name } = req.query; // Used for searching
+  const { newPassword, newname, newschoolName } = req.body; // Used for updating
+
+  try {
+    // Search for the user(s)
+    const query = {};
+    if (email) query.email = email;
+    if (name) query.name = name;
+
+    let users = await User.find(query);
+
+    if (!users || users.length === 0) {
+      return res.status(404).json({ message: "No users found" });
+    }
+
+    // If no update data is provided, return the found users
+    if (!newPassword && !newname && !newschoolName) {
+      return res.json(users);
+    }
+
+    // If update fields exist, update the users found
+    for (let user of users) {
+      if (newPassword) user.password = await bcrypt.hash(newPassword, 10);
+      if (newname) user.name = newname;
+      if (newschoolName) user.schoolName = newschoolName;
+
+      await user.save();
+    }
+
+    res.json({ message: "User details updated successfully", users });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+});
 
 
 

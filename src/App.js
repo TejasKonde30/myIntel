@@ -13,6 +13,9 @@ import Contact from './components/Contact';
 import AdminLogin from './components/AdminLogin';
 import AdminDashboard from './components/AdminDashboard';
 import AdminProtectedRoute from './AdminProtectedRoute';
+import AdminNavbar from './components/AdminNavbar';
+import ManageUsers from './components/ManageUsers';
+import UserSearch from './components/AdminDashboard';
 //import Contact from './components/Contact';
 
 
@@ -25,13 +28,19 @@ function App() {
             <Route path="/" element={<MainSection />} />
             <Route path="/AdminLogin" element={<AdminLogin />} />
             <Route path="/Admindashboard" element={<AdminProtectedRoute><AdminDashboard /></AdminProtectedRoute>} />
+            <Route path="/UserSearch" element={<AdminProtectedRoute><UserSearch /></AdminProtectedRoute>} />
+
+            {/*<Route path="/Admindashboard" element={<AdminProtectedRoute><AdminNavbar /></AdminProtectedRoute>} />*/}
+            <Route path="/ManageUsers" element={<AdminProtectedRoute><ManageUsers /></AdminProtectedRoute>} />
+
+
 
 
 
 
             <Route path="/login" element={<PublicRoute><Login /></PublicRoute>} />
 
-            <Route path="/register" element={<Register />} />x``
+            <Route path="/register" element={<Register />} />
             <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
             <Route path="/contact" element={<ProtectedRoute><Contact /></ProtectedRoute>} />
 
